@@ -1,0 +1,50 @@
+<dashboard>
+  <label>Randomly generated graphs</label>
+  <description>Those panels use the random() eval function to create new graphs on the fly. Click on the Refresh button at the bottom right of any panel to generate a new graph.</description>
+  <row>
+    <panel>
+      <title>Basic graph</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>|makeresults count=20 | eval Type="edge",Origin="node".(random()%20), Destination="node".(random()%20) | fields - _time</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.zoom">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">600</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Graph with clusters and ranks</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="attr",Subtype="node",AttrList="shape=box,style=\"filled,rounded\",fillcolor=yellow"
+| append [|makeresults count=10 | eval Id=1,Type="cluster" | accum Id | eval AttrList="style=rounded,label=\"Cluster #".Id."\""]
+| append [| makeresults count=20 | eval tmp=1,Type="node" | accum tmp | eval Id="node".tmp, Parents=if(random()%2==0,(random()%10)+1,Parents),Rank="R".random()%5]
+| append [|makeresults count=10 | eval Type="edge",Origin="node".(random()%20), Destination="node".((random()%20)+1)]
+| fields - _time, tmp</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">true</option>
+        <option name="drilldown">none</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</dashboard>

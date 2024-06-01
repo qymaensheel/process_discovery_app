@@ -1,0 +1,102 @@
+<dashboard>
+  <label>Dot manual examples</label>
+  <row>
+    <panel>
+      <html>
+    Those are replicas of some graphs you can find in the <a href="https://www.graphviz.org/pdf/dotguide.pdf">Dot manual</a>
+  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Graph with edges on clusters</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search id="edge_cluster">
+          <query>| inputlookup edges_on_cluster.csv | table Type, Subtype,Id,Origin,Destination,AttrList,Parents</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">600</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Process diagram with clusters</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search id="process_cluster">
+          <query>| inputlookup process_clusters.csv | table Type, Subtype,Id,Origin,Destination,AttrList,Parents</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">600</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search base="edge_cluster"/>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <search base="process_cluster"/>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Call graph with labeled clusters</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search id="call_graph">
+          <query>| inputlookup call_graph.csv | table Type,Subtype,Id,AttrList,Parents,Origin,Destination</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">600</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search base="call_graph"/>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

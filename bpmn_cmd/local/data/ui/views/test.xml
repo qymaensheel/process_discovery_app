@@ -1,0 +1,117 @@
+<form version="1.1" theme="dark">
+  <label>Process Discovery Dashboard</label>
+  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <row>
+    <panel>
+      <title>Single Case Visualization</title>
+      <input type="text" token="case_id">
+        <label>Select Case ID:</label>
+        <default>1</default>
+        <initialValue>1</initialValue>
+      </input>
+      <viz type="SA-Graphviz.graphviz">
+        <title>Case inspect (select Case ID above)</title>
+        <search>
+          <query>index="repair_example_index" "Case ID"= $case_id$ | reverse | generategraph | table *</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="SA-Graphviz.graphviz.displayGraph">false</option>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">true</option>
+        <option name="SA-Graphviz.graphviz.scale">1</option>
+        <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
+        <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.zoom">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">720</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Case Study Overview</title>
+      <viz type="SA-Graphviz.graphviz">
+        <title>Process Summary</title>
+        <search>
+          <query>index="repair_example_index"  | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace" | stats count by Trace | sort "count" desc | processDiagram</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="SA-Graphviz.graphviz.displayGraph">false</option>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">true</option>
+        <option name="SA-Graphviz.graphviz.scale">1</option>
+        <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
+        <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.zoom">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">802</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Split Miner Filtering</title>
+      <input type="text" token="concurrency">
+        <label>Concurrency Threshold</label>
+        <default>0</default>
+      </input>
+      <input type="text" token="percentile" searchWhenChanged="true">
+        <label>Percentile Threshold</label>
+        <default>50</default>
+      </input>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>index="repair_example_index" | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace" | stats count by Trace | sort "count" desc | filtergraph concurrency=$concurrency$ percentile=$percentile$</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="SA-Graphviz.graphviz.displayGraph">false</option>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">false</option>
+        <option name="SA-Graphviz.graphviz.scale">1</option>
+        <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
+        <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.zoom">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">721</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Traces</title>
+        <search>
+          <query>index="repair_example_index" | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Individual Trace count</title>
+        <search>
+          <query>index="repair_example_index" | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace" | stats count by Trace | sort "count" desc</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

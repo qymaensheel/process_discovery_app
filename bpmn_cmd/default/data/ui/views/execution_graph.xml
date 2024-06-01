@@ -1,0 +1,155 @@
+<form>
+  <label>Execution graph</label>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+      This example shows how to compute a graph dynamically based on execution logs.<br/>
+      It is based on 3 lookups containing respectively the description of the processes (the nodes), the dependencies between them (the edges) and the execution logs of the processes.<br/>
+      Check the xml code of the dashboard for more explanations on the query.
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Nodes</title>
+      <table>
+        <search>
+          <query>| inputlookup nodes_batch.csv | table Id,Label</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Edges</title>
+      <table>
+        <search>
+          <query>| inputlookup edges_batch.csv | table Origin,Destination</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Execution logs</title>
+      <table>
+        <search>
+          <query>| inputlookup exec_batch.csv | table Time,Process,Step,Status</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Execution graph</title>
+      <input type="dropdown" token="maxTime">
+        <label>See execution up to :</label>
+        <fieldForLabel>maxTime</fieldForLabel>
+        <fieldForValue>maxTime</fieldForValue>
+        <selectFirstChoice>true</selectFirstChoice>
+        <search>
+          <query>| inputlookup exec_batch.csv | eval maxTime=strftime(relative_time(strptime(Time,"%Y/%m/%d %H:%M:%S.%3N"),"+1m"),"%H:%M") | dedup maxTime</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <change>
+          <eval token="latestLog">strptime("2018/12/19 ".maxTime,"%Y/%m/%d %H:%M")</eval>
+        </change>
+      </input>
+      <viz type="SA-Graphviz.graphviz">
+        <search id="exec_graph">
+          <query>
+                        
+            <!-- collect the list of nodes and apply a default formating -->
+            | inputlookup nodes_batch.csv | eval Type="node", Attr_label=Label, Attr_shape="box",Attr_style="filled,rounded",Attr_fillcolor="#ffffcc",Attr_tooltip="status : Not executed"
+            | join type=left Id [
+                  <!-- check the status of the nodes from the execution logs -->
+                  | inputlookup exec_batch.csv  | eval _time=strptime(Time,"%Y/%m/%d %H:%M:%S.%3N") | search _time &lt;= $latestLog$ | table _time,Process,Step,Status
+                  <!-- compute the beginning and end of each process -->
+                  | stats earliest(_time) as Start, earliest(Step) as StartStep, latest(_time) as End, latest(Status) as EndStatus,latest(Step) as EndStep by Process
+                  | eval End=if(EndStatus="Running",$latestLog$,End)
+                  <!-- put that into the graph with some formating and compute a rank to align the nodes with their ending time -->
+                  | eval Attr_tooltip="status : ".EndStatus."\nduration: ".(round(End-Start,0))."s", hour=strftime(End,"%H"),minute=strftime(End,"%M"), Rank=hour.minute, Attr_fillcolor=case(EndStatus=="OK","#66ff66",EndStatus=="KO","#ff5050",true(),"#6699ff"),Attr_peripheries=if(EndStatus=="Running",2,1)
+                  | rename Process as Id
+            ]
+            | appendpipe [
+                  <!-- compute the timeline based on the ending time of each node. The Position flag forces those nodes to be written first in the graph, meaning that GraphViz will draw the first node of the chronology first i.e. on the left of the first process node -->
+                  | dedup hour,minute | eval Id=hour.minute,Rank=Id,Attr_label=hour.":".minute,Attr_shape="diamond",Attr_style="filled",Attr_fillcolor="#ccffff",Position=0 | table Type,Id,Rank,Attr_label,Attr_shape,Attr_style,Attr_fillcolor,Position
+                  | appendpipe [
+                        <!-- compute the edges between the nodes of the timeline -->
+                        | sort - Id | streamstats window=1 current=false last(Id) as Destination | search Destination=* | rename Id as Origin | eval Type="edge",Attr_style="dashed" | table Type,Origin,Destination,Attr_style
+                  ]
+            ]
+            <!-- collect the edges -->
+            | append [|inputlookup edges_batch.csv | eval Type="edge" ]
+            <!-- concatenate all the Attr_X fields into an AttrList field -->
+            | `computeAttrList`
+            | table Type,Id,Origin,Destination,AttrList,Rank,Position
+            
+          </query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.displayGraph">false</option>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">true</option>
+        <option name="SA-Graphviz.graphviz.scale">1</option>
+        <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.zoom">0</option>
+        <option name="drilldown">none</option>
+        <option name="height">600</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search base="exec_graph"></search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

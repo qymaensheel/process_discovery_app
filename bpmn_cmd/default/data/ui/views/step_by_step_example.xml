@@ -1,0 +1,326 @@
+<dashboard>
+  <label>Step by step example</label>
+  <description>This dashboard shows how to create a graph by adding new concepts step by step. Look at the search behind each panel to understand how it works. For the rendering configuration, check the formating options of the visualisation by editing the dashboard and clicking on "Format visualization".</description>
+  <row>
+    <panel>
+      <title>Let's draw a graph...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">350</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add some edges...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">350</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add some global formating...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="attr",Subtype="node",AttrList="shape=box,style=filled,color=darkgreen,fillcolor=green"
+| append [| makeresults | eval Type="attr",Subtype="edge",AttrList="color=blue"]
+| append [| makeresults | eval Type="edge",Origin="A",Destination="B"]
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">350</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Or define the format of each element...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\""]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta"]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">350</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Add some groups...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow",Parents="group2"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">400</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add some ranking...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">false</option>
+        <option name="SA-Graphviz.graphviz.scale">1</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.zoom">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">400</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add some tooltips &amp; drilldown...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
+        <option name="drilldown">none</option>
+        <option name="height">350</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">400</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Change the scale...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">true</option>
+        <option name="SA-Graphviz.graphviz.scale">0.5</option>
+        <option name="SA-Graphviz.graphviz.width">500</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.zoom">0</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add scrollbars...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.engine">dot</option>
+        <option name="SA-Graphviz.graphviz.fit">false</option>
+        <option name="SA-Graphviz.graphviz.height">800</option>
+        <option name="SA-Graphviz.graphviz.scale">2</option>
+        <option name="SA-Graphviz.graphviz.width">800</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.zoom">0</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Add zoom...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.xScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">true</option>
+        <option name="SA-Graphviz.graphviz.zoom">true</option>
+        <option name="drilldown">none</option>
+        <option name="height">350</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">200</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Use a different rendering engine...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.engine">neato</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.zoom">0</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">250</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Or another one...</title>
+      <viz type="SA-Graphviz.graphviz">
+        <search>
+          <query>| makeresults | eval Type="edge",Origin="A",Destination="B"
+| append [| makeresults | eval Type="edge",Origin="A",Destination="C",AttrList="style=dashed,color=red"]
+| append [| makeresults | eval Type="edge",Origin="C",Destination="D"]
+| append [|makeresults | eval Type="node",Id="A",AttrList="color=blue,label=\"node\nA\",tooltip=\"Link to external website\",URL=\"https://www.graphviz.org/doc/info/attrs.html\"",Parents="group1",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="B",AttrList="style=filled,fillcolor=green,tooltip=\"Link to another dashboard\",URL=\"dot_manual_examples\"",Parents="group1"]
+| append [|makeresults | eval Type="node",Id="C",AttrList="peripheries=2,shape=box,color=yellow,tooltip=\"Call to a javascript function\",URL=\"javascript:alert('Hello World !')\"",Parents="group2",Rank="rank1"]
+| append [|makeresults | eval Type="node",Id="D",AttrList="shape=triangle,style=\"filled,rounded\",fillcolor=magenta",Parents="group2"]
+| append [|makeresults | eval Type="cluster",Id="group1",AttrList="style=bold,label=Group_1,tooltip=firstGroup"]
+| append [|makeresults | eval Type="cluster",Id="group2",AttrList="style=rounded,label=\"Group 2\",tooltip=\"Second group\n Click me !\",URL=\"javascript:alert('TODO')\""]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="SA-Graphviz.graphviz.engine">fdp</option>
+        <option name="SA-Graphviz.graphviz.xScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.yScrollbar">0</option>
+        <option name="SA-Graphviz.graphviz.zoom">0</option>
+        <option name="drilldown">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">250</option>
+      </viz>
+    </panel>
+  </row>
+</dashboard>
