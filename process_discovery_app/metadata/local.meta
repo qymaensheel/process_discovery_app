@@ -1,0 +1,33 @@
+[]
+access = read : [ * ], write : [ admin, power ]
+export = system
+
+[indexes/bpmn]
+owner = admin
+version = 9.2.0.1
+modtime = 1710285881.064241300
+
+[views/test]
+owner = admin
+version = 9.2.0.1
+modtime = 1713395359.812949300
+
+[props/repair_example_sourcetype]
+owner = admin
+version = 9.2.0.1
+modtime = 1711242293.749312500
+
+[indexes/repair_example_index]
+owner = admin
+version = 9.2.0.1
+modtime = 1711242382.954509400
+
+[props/csv-running]
+owner = admin
+version = 9.2.0.1
+modtime = 1722859972.863302700
+
+[indexes/running_index]
+owner = admin
+version = 9.2.0.1
+modtime = 1722860000.321818300
