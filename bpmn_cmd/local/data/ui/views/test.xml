@@ -1,6 +1,32 @@
 <form version="1.1" theme="dark">
   <label>Process Discovery Dashboard</label>
-  <fieldset submitButton="false" autoRun="true"></fieldset>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="text" token="case_id_col" searchWhenChanged="false">
+      <label>Case ID column name</label>
+      <default>Case ID</default>
+      <initialValue>Case ID</initialValue>
+    </input>
+    <input type="text" token="start_timestamp_col">
+      <label>Start Timestamp column name</label>
+      <default>Start Timestamp</default>
+      <initialValue>Start Timestamp</initialValue>
+    </input>
+    <input type="text" token="end_timestamp_col">
+      <label>End Timestamp column name</label>
+      <default>Complete Timestamp</default>
+      <initialValue>Complete Timestamp</initialValue>
+    </input>
+    <input type="text" token="activity_col">
+      <label>Activity column name</label>
+      <default>Activity</default>
+      <initialValue>Activity</initialValue>
+    </input>
+    <input type="text" token="date_col">
+      <label>Date format</label>
+      <default>%Y/%d/%m %H:%M:%S.%f</default>
+      <initialValue>%Y/%d/%m %H:%M:%S.%f</initialValue>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>Single Case Visualization</title>
@@ -22,14 +48,17 @@
         <option name="SA-Graphviz.graphviz.scale">1</option>
         <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
         <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.width">1500</option>
         <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.zoom">false</option>
         <option name="drilldown">none</option>
-        <option name="height">720</option>
+        <option name="height">265</option>
         <option name="refresh.display">progressbar</option>
       </viz>
     </panel>
+  </row>
+  <row>
     <panel>
       <title>Case Study Overview</title>
       <viz type="SA-Graphviz.graphviz">
@@ -45,49 +74,49 @@
         <option name="SA-Graphviz.graphviz.scale">1</option>
         <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
         <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.width">1500</option>
         <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.zoom">false</option>
         <option name="drilldown">none</option>
-        <option name="height">802</option>
+        <option name="height">595</option>
         <option name="refresh.display">progressbar</option>
       </viz>
     </panel>
   </row>
   <row>
     <panel>
-      <title>Split Miner Filtering</title>
-      <input type="text" token="concurrency">
-        <label>Concurrency Threshold</label>
+      <title>Process Filtering</title>
+      <input type="text" token="threshold">
+        <label>Filtering threshold</label>
         <default>0</default>
       </input>
-      <input type="text" token="percentile" searchWhenChanged="true">
-        <label>Percentile Threshold</label>
-        <default>50</default>
-      </input>
       <viz type="SA-Graphviz.graphviz">
+        <title>Filtered Graph</title>
         <search>
-          <query>index="repair_example_index" | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace" | stats count by Trace | sort "count" desc | filtergraph concurrency=$concurrency$ percentile=$percentile$</query>
+          <query>index="repair_example_index" | fields "Case ID", "Start Timestamp", "Activity" | reverse | sort "Case ID", "Start Timestamp" | traces | fields "Case ID", "Trace" | stats count by Trace | sort "count" desc | filtergraph threshold=$threshold$</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
         <option name="SA-Graphviz.graphviz.displayGraph">false</option>
         <option name="SA-Graphviz.graphviz.engine">dot</option>
-        <option name="SA-Graphviz.graphviz.fit">false</option>
+        <option name="SA-Graphviz.graphviz.fit">true</option>
         <option name="SA-Graphviz.graphviz.scale">1</option>
         <option name="SA-Graphviz.graphviz.totalMemory">8388608</option>
         <option name="SA-Graphviz.graphviz.wait">true</option>
+        <option name="SA-Graphviz.graphviz.width">1500</option>
         <option name="SA-Graphviz.graphviz.xScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.yScrollbar">false</option>
         <option name="SA-Graphviz.graphviz.zoom">false</option>
         <option name="drilldown">none</option>
-        <option name="height">721</option>
+        <option name="height">244</option>
         <option name="refresh.display">progressbar</option>
       </viz>
     </panel>
   </row>
   <row>
     <panel>
+      <title>Trace by Case table</title>
       <table>
         <title>Traces</title>
         <search>
@@ -101,6 +130,7 @@
       </table>
     </panel>
     <panel>
+      <title>Individual Trace counts</title>
       <table>
         <title>Individual Trace count</title>
         <search>

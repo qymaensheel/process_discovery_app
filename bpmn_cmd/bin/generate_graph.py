@@ -17,10 +17,30 @@
 
 import os
 import sys
+import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
 
-from splunklib.searchcommands import dispatch, EventingCommand, Configuration
+from splunklib.searchcommands import dispatch, EventingCommand, Configuration, Option
+
+
+def return_obj(
+    Id="",  # noqa: disable=E251
+    case_id="",
+    origin="",
+    destination="",
+    obj_type="",
+    parents="",
+    attr_list="",
+):
+    return {
+        "Id": Id,
+        "Origin": origin,
+        "Destination": destination,
+        "type": obj_type,
+        "Parents": parents,
+        "AttrList": attr_list,
+    }
 
 
 @Configuration()
@@ -36,30 +56,58 @@ class EventingCSC(EventingCommand):
     Returns records having status 200 as mentioned in search query.
     """
 
-    # status = Option(
-    #     doc='''**Syntax:** **status=***<value>*
-    #     **Description:** record having same status value will be returned.''',
-    #     require=True)
+    caseid = Option(
+        doc='''**Syntax:** **caseid=***<value>*
+        **Description:** Case ID column name.''',
+        require=False)
+    activity = Option(
+        doc='''**Syntax:** **activity=***<value>*
+        **Description:** Activity column name.''',
+        require=False)
+    start = Option(
+        doc='''**Syntax:** **start=***<value>*
+        **Description:** Start Timestamp column name.''',
+        require=False)
+    end = Option(
+        doc='''**Syntax:** **end=***<value>*
+        **Description:** End Timestamp column name.''',
+        require=False)
+    date = Option(
+        doc='''**Syntax:** **date=***<value>*
+        **Description:** End Timestamp column name.''',
+        require=False)
 
     def transform(self, records):
 
-        # To connect with Splunk, use the instantiated service object which is created using the server-uri and
-        # other meta details and can be accessed as shown below
-        # Example:-
-        #    service = self.service
-        #    info = service.info //access the Splunk Server info
+        if not self.caseid:
+            self.caseid = "Case ID"
+        if not self.activity:
+            self.activity = "Activity"
+        if not self.start:
+            self.start = "Start Timestamp"
+        if not self.end:
+            self.end = "Complete Timestamp"
+        if not self.date:
+            self.date = "%Y/%d/%m %H:%M:%S.%f"
+
         current_case = None
-        prev_activity = None
         prev_node_id = None
         graph = None
         nodes = {}
         i = 1
+
+        yield return_obj(
+            Id="a1",
+            obj_type="attr",
+            attr_list=f'rankdir="LR"'
+        )
+
         for record in records:
-            new_case = record['Case ID']
-            node = record["Activity"]
+            new_case = record[self.caseid]
+            node = record[self.activity]
             if new_case == current_case:
                 yield {
-                    "Case ID": record["Case ID"],
+                    "Case ID": record[self.caseid],
                     "Origin": prev_node_id,  # prev_activity,
                     "Destination": f"{graph}-{node}",  # record["Activity"],
                     "type": "edge",
@@ -83,6 +131,12 @@ class EventingCSC(EventingCommand):
                 }
             if node not in nodes[current_case]:
                 nodes[current_case].append(node)
+                try:
+                    start_time = datetime.datetime.strptime(record[self.start], self.date)
+                    complete_time = datetime.datetime.strptime(record[self.end], self.date)
+                except ValueError:
+                    start_time = complete_time = 0
+                total_time = str(complete_time - start_time)
                 yield {
                     "Id": f"{graph}-{node}",
                     "Case ID": "",
@@ -90,10 +144,9 @@ class EventingCSC(EventingCommand):
                     "Destination": "",
                     "type": "node",
                     "Parents": graph,
-                    "AttrList": f'label="{node}"'
+                    "AttrList": f'label="{node}\n{total_time}"'
                 }
 
-            prev_activity = record["Activity"]
             prev_node_id = f"{graph}-{node}"
 
 
